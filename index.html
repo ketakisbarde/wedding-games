@@ -191,6 +191,32 @@
   @supports (padding: env(safe-area-inset-bottom)) {
     .music-toggle { bottom: calc(16px + env(safe-area-inset-bottom)); }
   }
+
+  /* Couple stickers */
+  .stickers {
+    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .sticker {
+    width: 120px; height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.3s;
+    background: #fff;
+    padding: 6px;
+    border: 1px solid #e8ddd8;
+  }
+  .sticker:nth-child(1) { transform: rotate(-3deg); }
+  .sticker:nth-child(2) { transform: rotate(2deg); }
+  .sticker:nth-child(3) { transform: rotate(-1.5deg); }
+  .sticker:hover { transform: scale(1.08) rotate(0deg); z-index: 2; }
+  @media (max-width: 500px) {
+    .sticker { width: 95px; padding: 4px; }
+    .stickers { gap: 8px; margin-bottom: 20px; }
+  }
+  @media (max-width: 360px) {
+    .sticker { width: 80px; }
+  }
 </style>
 </head>
 <body>
@@ -206,6 +232,13 @@
     <h1>Ketaki & Ash</h1>
     <p class="subtitle">Wedding Games</p>
     <p class="date-line">August 16, 2026 · Château Mt Eden, Saratoga CA</p>
+  </div>
+
+  <!-- Couple stickers -->
+  <div class="stickers">
+    <img src="assets/namaste.png" alt="Ketaki & Ash namaste" class="sticker">
+    <img src="assets/dance.png" alt="Ketaki & Ash dancing" class="sticker">
+    <img src="assets/noodle.png" alt="Ketaki & Ash noodling" class="sticker">
   </div>
 
   <div class="games-grid">

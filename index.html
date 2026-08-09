@@ -19,19 +19,40 @@
     position: relative; overflow-x: hidden;
   }
 
-  /* Scattered doodle stickers - positioned around page */
-  .doodle {
-    position: fixed; pointer-events: none; z-index: 0;
-    font-size: 2.4rem; opacity: 0.45;
+  /* Falling particles container */
+  .particles {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
   }
-  .doodle:nth-child(1) { top: 5%; left: 6%; transform: rotate(-12deg); }
-  .doodle:nth-child(2) { top: 12%; right: 8%; transform: rotate(8deg); }
-  .doodle:nth-child(3) { top: 38%; left: 3%; transform: rotate(-5deg); }
-  .doodle:nth-child(4) { top: 55%; right: 5%; transform: rotate(15deg); }
-  .doodle:nth-child(5) { bottom: 18%; left: 7%; transform: rotate(6deg); }
-  .doodle:nth-child(6) { bottom: 8%; right: 10%; transform: rotate(-10deg); }
-  .doodle:nth-child(7) { top: 75%; left: 85%; transform: rotate(20deg); }
-  .doodle:nth-child(8) { top: 25%; left: 88%; transform: rotate(-18deg); }
+  .particle {
+    position: absolute; top: -60px;
+    animation: fall linear infinite;
+    opacity: 0;
+  }
+  @keyframes fall {
+    0% {
+      transform: translateY(0) rotate(0deg) translateX(0);
+      opacity: 0;
+    }
+    5% { opacity: 0.7; }
+    50% {
+      transform: translateY(50vh) rotate(180deg) translateX(30px);
+      opacity: 0.6;
+    }
+    95% { opacity: 0.4; }
+    100% {
+      transform: translateY(105vh) rotate(360deg) translateX(-20px);
+      opacity: 0;
+    }
+  }
+  /* Butterfly flutter */
+  .particle.butterfly {
+    animation: fall linear infinite, flutter 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes flutter {
+    0% { transform: scaleX(1) translateX(0); }
+    100% { transform: scaleX(-1) translateX(15px); }
+  }
 
   .container {
     position: relative; z-index: 1; max-width: 560px; width: 100%; text-align: center;
@@ -146,21 +167,14 @@
     .game-card { padding: 20px 14px; gap: 12px; }
     .game-icon { font-size: 2rem; width: 48px; height: 48px; }
     .game-title { font-size: 1.05rem; }
-    .doodle { font-size: 1.8rem; }
+    .particle { font-size: 1.2rem !important; }
   }
 </style>
 </head>
 <body>
 
-<!-- Scattered sticker doodles -->
-<span class="doodle">🌸</span>
-<span class="doodle">💌</span>
-<span class="doodle">🦋</span>
-<span class="doodle">🌿</span>
-<span class="doodle">💒</span>
-<span class="doodle">🎀</span>
-<span class="doodle">🕊️</span>
-<span class="doodle">✿</span>
+<!-- Falling particles -->
+<div class="particles" id="particles"></div>
 
 <div class="container">
   <!-- Scrapbook-style header -->
@@ -202,6 +216,40 @@
 </audio>
 
 <script>
+  // Falling particles — butterflies, florals, petals, leaves
+  const particlesEl = document.getElementById('particles');
+  const items = [
+    { emoji: '🦋', type: 'butterfly' },
+    { emoji: '🌸', type: 'petal' },
+    { emoji: '🌺', type: 'petal' },
+    { emoji: '🌷', type: 'petal' },
+    { emoji: '🌿', type: 'leaf' },
+    { emoji: '🍃', type: 'leaf' },
+    { emoji: '🌹', type: 'petal' },
+    { emoji: '🪻', type: 'petal' },
+    { emoji: '🕊️', type: 'butterfly' },
+    { emoji: '🎀', type: 'petal' },
+    { emoji: '💐', type: 'petal' },
+    { emoji: '✿', type: 'petal' },
+  ];
+  function spawnParticle() {
+    const item = items[Math.floor(Math.random() * items.length)];
+    const el = document.createElement('span');
+    el.classList.add('particle');
+    if (item.type === 'butterfly') el.classList.add('butterfly');
+    el.textContent = item.emoji;
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (1.2 + Math.random() * 1.4) + 'rem';
+    el.style.animationDuration = (6 + Math.random() * 8) + 's';
+    el.style.animationDelay = (Math.random() * 2) + 's';
+    particlesEl.appendChild(el);
+    setTimeout(() => el.remove(), 16000);
+  }
+  // Spawn initial batch
+  for (let i = 0; i < 10; i++) setTimeout(spawnParticle, i * 400);
+  // Continuous spawn
+  setInterval(spawnParticle, 900);
+
   // Music toggle
   const musicBtn = document.getElementById('musicBtn');
   const bgMusic = document.getElementById('bgMusic');

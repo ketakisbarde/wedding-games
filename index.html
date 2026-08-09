@@ -161,13 +161,35 @@
   }
 
   @media (max-width: 500px) {
+    body { padding: 24px 14px; }
     h1 { font-size: 2.4rem; }
-    .subtitle { font-size: 1.1rem; }
-    .header-frame { padding: 24px 16px 18px; }
+    .subtitle { font-size: 1.1rem; letter-spacing: 1px; }
+    .header-frame { padding: 24px 16px 18px; margin-bottom: 24px; }
+    .tape { width: 60px; height: 18px; }
+    .tape-tl { left: 12px; }
+    .tape-tr { right: 12px; }
     .game-card { padding: 20px 14px; gap: 12px; }
+    .game-card::before { width: 40px; height: 12px; }
     .game-icon { font-size: 2rem; width: 48px; height: 48px; }
     .game-title { font-size: 1.05rem; }
+    .game-desc { font-size: 0.8rem; line-height: 1.5; }
+    .music-toggle { width: 42px; height: 42px; font-size: 1.1rem; bottom: 16px; right: 16px; }
     .particle { font-size: 1.2rem !important; }
+    .footer { font-size: 1rem; margin-top: 36px; }
+    .date-line { font-size: 0.75rem; }
+  }
+  @media (max-width: 360px) {
+    body { padding: 16px 10px; }
+    h1 { font-size: 2rem; }
+    .subtitle { font-size: 0.95rem; }
+    .header-frame { padding: 20px 12px 14px; }
+    .game-card { padding: 16px 12px; gap: 10px; }
+    .game-icon { width: 42px; height: 42px; font-size: 1.8rem; }
+    .game-title { font-size: 0.95rem; }
+  }
+  /* Safe area for notched phones */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .music-toggle { bottom: calc(16px + env(safe-area-inset-bottom)); }
   }
 </style>
 </head>
@@ -183,7 +205,7 @@
     <div class="tape tape-tr"></div>
     <h1>Ketaki & Ash</h1>
     <p class="subtitle">Wedding Games</p>
-    <p class="date-line">August 16, 2026 · Chateau at Coindre Hall</p>
+    <p class="date-line">August 16, 2026 · Château Mt Eden, Saratoga CA</p>
   </div>
 
   <div class="games-grid">

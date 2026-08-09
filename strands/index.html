@@ -154,9 +154,28 @@
   }
   .music-toggle.playing { background: #d4727a; }
   @media (max-width: 420px) {
-    .cell { width: 46px; height: 46px; font-size: 1.1rem; }
+    .cell { width: 44px; height: 44px; font-size: 1.05rem; border-radius: 8px; }
     .grid { gap: 4px; }
-    h1 { font-size: 1.6rem; }
+    h1 { font-size: 1.8rem; }
+    .theme-clue { font-size: 0.85rem; margin-bottom: 10px; }
+    .level-btn { padding: 8px 14px; font-size: 0.8rem; }
+    .word-chip { font-size: 0.7rem; padding: 4px 8px; }
+    .current-word { font-size: 1.1rem; }
+    .ctrl-btn { padding: 10px 16px; font-size: 0.8rem; }
+    .back-btn { padding: 6px 12px; font-size: 0.8rem; }
+    .music-toggle { width: 38px; height: 38px; font-size: 1rem; }
+    .grid-container { padding: 8px; }
+  }
+  @media (max-width: 360px) {
+    .cell { width: 38px; height: 38px; font-size: 0.95rem; }
+    .grid { gap: 3px; }
+    h1 { font-size: 1.5rem; }
+    .level-selector { gap: 6px; }
+    .level-btn { padding: 6px 10px; font-size: 0.75rem; }
+    .controls { gap: 8px; }
+  }
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .music-toggle { bottom: calc(16px + env(safe-area-inset-bottom)); }
   }
 </style>
 </head>

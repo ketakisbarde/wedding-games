@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ketaki & Ash - Wedding Games 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+    font-family: 'Quicksand', sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 20px;
+    position: relative; overflow-x: hidden;
+  }
+  /* Floating hearts background */
+  .hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+  .heart {
+    position: absolute; font-size: 24px; opacity: 0.3;
+    animation: floatUp 8s linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0.3; }
+    100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+  }
+  .container { position: relative; z-index: 1; max-width: 600px; width: 100%; text-align: center; }
+  h1 {
+    font-family: 'Pacifico', cursive; font-size: 2.8rem;
+    color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 1.1rem; color: #5a3e36; font-weight: 600;
+    margin-bottom: 40px; letter-spacing: 0.5px;
+  }
+  .games-grid { display: flex; flex-direction: column; gap: 20px; }
+  .game-card {
+    background: rgba(255,255,255,0.9); border-radius: 20px;
+    padding: 28px 24px; text-decoration: none; color: #333;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; align-items: center; gap: 18px;
+    border: 2px solid transparent;
+  }
+  .game-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    border-color: #ff6b6b;
+  }
+  .game-icon { font-size: 3rem; flex-shrink: 0; }
+  .game-info { text-align: left; }
+  .game-title { font-size: 1.3rem; font-weight: 700; color: #e74c3c; margin-bottom: 4px; }
+  .game-desc { font-size: 0.9rem; color: #666; line-height: 1.4; }
+  .game-badge {
+    display: inline-block; background: #ff6b6b; color: #fff;
+    font-size: 0.7rem; font-weight: 700; padding: 3px 8px;
+    border-radius: 10px; margin-top: 6px; text-transform: uppercase;
+  }
+  .coming-soon { opacity: 0.5; pointer-events: none; }
+  .coming-soon .game-badge { background: #aaa; }
+  /* Music toggle */
+  .music-toggle {
+    position: fixed; bottom: 20px; right: 20px; z-index: 100;
+    background: rgba(255,255,255,0.9); border: 2px solid #ff6b6b;
+    border-radius: 50%; width: 50px; height: 50px;
+    font-size: 1.4rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+  }
+  .music-toggle:hover { transform: scale(1.1); }
+  .music-toggle.playing { background: #ff6b6b; border-color: #ff6b6b; }
+  .footer {
+    margin-top: 60px; font-size: 0.85rem; color: #5a3e36;
+    opacity: 0.7;
+  }
+  @media (max-width: 500px) {
+    h1 { font-size: 2rem; }
+    .game-card { padding: 20px 16px; gap: 14px; }
+    .game-icon { font-size: 2.4rem; }
+    .game-title { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="container">
+  <h1>Ketaki & Ash</h1>
+  <p class="subtitle">✨ Wedding Games ✨</p>
+
+  <div class="games-grid">
+    <a href="strands/index.html" class="game-card">
+      <div class="game-icon">🔤</div>
+      <div class="game-info">
+        <div class="game-title">Wedding Strands</div>
+        <div class="game-desc">Find hidden wedding-themed words by tracing adjacent letters. 3 levels — how well do you know the couple?</div>
+        <span class="game-badge">Play Now</span>
+      </div>
+    </a>
+
+    <div class="game-card coming-soon">
+      <div class="game-icon">🎯</div>
+      <div class="game-info">
+        <div class="game-title">Coming Soon...</div>
+        <div class="game-desc">More games on the way! Stay tuned.</div>
+        <span class="game-badge">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer">Made with 💕 for our wedding day</p>
+</div>
+
+<!-- Background Music (optional) -->
+<button class="music-toggle" id="musicBtn" title="Toggle Music">🔇</button>
+<audio id="bgMusic" loop preload="none">
+  <!-- Drop your SpongeBob instrumental or any fun track as bg-music.mp3 in assets/ -->
+  <source src="assets/bg-music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  // Floating hearts
+  const heartsContainer = document.getElementById('hearts');
+  const heartEmojis = ['💕', '💗', '💖', '✨', '💍', '🌸'];
+  function spawnHeart() {
+    const heart = document.createElement('span');
+    heart.classList.add('heart');
+    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    heart.style.left = Math.random() * 100 + '%';
+    heart.style.animationDuration = (6 + Math.random() * 6) + 's';
+    heart.style.animationDelay = Math.random() * 2 + 's';
+    heart.style.fontSize = (16 + Math.random() * 20) + 'px';
+    heartsContainer.appendChild(heart);
+    setTimeout(() => heart.remove(), 14000);
+  }
+  setInterval(spawnHeart, 800);
+  for (let i = 0; i < 8; i++) setTimeout(spawnHeart, i * 300);
+
+  // Music toggle
+  const musicBtn = document.getElementById('musicBtn');
+  const bgMusic = document.getElementById('bgMusic');
+  let playing = false;
+  musicBtn.addEventListener('click', () => {
+    if (playing) {
+      bgMusic.pause();
+      musicBtn.textContent = '🔇';
+      musicBtn.classList.remove('playing');
+    } else {
+      bgMusic.volume = 0.3;
+      bgMusic.play().catch(() => {});
+      musicBtn.textContent = '🎵';
+      musicBtn.classList.add('playing');
+    }
+    playing = !playing;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Wedding Strands 🔤</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Quicksand', sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 12px; overflow-x: hidden;
+  }
+  .back-btn {
+    position: fixed; top: 12px; left: 12px; z-index: 100;
+    background: rgba(255,255,255,0.9); border: none; border-radius: 20px;
+    padding: 8px 16px; font-size: 0.85rem; font-weight: 700;
+    color: #764ba2; cursor: pointer; font-family: inherit;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .back-btn:hover { background: #fff; }
+  h1 {
+    font-family: 'Pacifico', cursive; font-size: 2rem; color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.2); margin-bottom: 4px; margin-top: 10px;
+  }
+  .theme-clue {
+    font-size: 1rem; color: #e0d4f7; margin-bottom: 16px;
+    font-weight: 600; font-style: italic;
+  }
+  /* Level selector */
+  .level-selector {
+    display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;
+  }
+  .level-btn {
+    background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5);
+    color: #fff; padding: 10px 20px; border-radius: 25px; font-size: 0.9rem;
+    font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+  }
+  .level-btn:hover { background: rgba(255,255,255,0.3); }
+  .level-btn.active { background: #fff; color: #764ba2; border-color: #fff; }
+  /* Word list */
+  .word-list {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    margin-bottom: 16px; max-width: 380px;
+  }
+  .word-chip {
+    background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4);
+    color: #fff; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem;
+    font-weight: 600; letter-spacing: 1px; transition: all 0.3s;
+  }
+  .word-chip.found {
+    background: #4ecdc4; border-color: #4ecdc4; color: #fff;
+    text-decoration: line-through; opacity: 0.8;
+  }
+  .word-chip.spangram { border-color: #f7d794; color: #f7d794; }
+  .word-chip.spangram.found { background: #f7d794; color: #333; border-color: #f7d794; }
+  /* Grid */
+  .grid-container {
+    background: rgba(255,255,255,0.1); border-radius: 16px;
+    padding: 12px; margin-bottom: 16px;
+    backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);
+  }
+  .grid {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 6px; max-width: 360px; margin: 0 auto;
+  }
+  .cell {
+    width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.9); border-radius: 10px;
+    font-size: 1.3rem; font-weight: 700; color: #333;
+    cursor: pointer; transition: all 0.15s;
+    border: 2px solid transparent; position: relative;
+  }
+  .cell:hover { background: #fff; transform: scale(1.05); }
+  .cell.selected {
+    background: #a29bfe; color: #fff; border-color: #6c5ce7;
+    transform: scale(1.08); box-shadow: 0 2px 12px rgba(108,92,231,0.4);
+  }
+  .cell.found-word {
+    background: #4ecdc4; color: #fff; border-color: #26a69a;
+  }
+  .cell.found-spangram {
+    background: #f7d794; color: #333; border-color: #f19066;
+  }
+  .cell.shake { animation: shake 0.4s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .cell.pop { animation: pop 0.3s; }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1.08); }
+  }
+  /* Current word display */
+  .current-word {
+    font-size: 1.4rem; font-weight: 700; color: #fff; min-height: 36px;
+    margin-bottom: 12px; letter-spacing: 2px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+  }
+  /* Controls */
+  .controls { display: flex; gap: 12px; margin-bottom: 20px; }
+  .ctrl-btn {
+    background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.5);
+    color: #fff; padding: 10px 20px; border-radius: 25px; font-size: 0.85rem;
+    font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .ctrl-btn:hover { background: rgba(255,255,255,0.35); }
+  .ctrl-btn.submit { background: #4ecdc4; border-color: #4ecdc4; }
+  .ctrl-btn.submit:hover { background: #26a69a; }
+  /* Win overlay */
+  .win-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8); z-index: 999;
+    justify-content: center; align-items: center; flex-direction: column;
+  }
+  .win-overlay.active { display: flex; }
+  .win-content {
+    background: #fff; border-radius: 24px; padding: 40px;
+    text-align: center; max-width: 340px; width: 90%;
+  }
+  .win-emoji { font-size: 4rem; margin-bottom: 12px; }
+  .win-title { font-family: 'Pacifico', cursive; font-size: 1.8rem; color: #764ba2; margin-bottom: 8px; }
+  .win-text { color: #666; font-size: 0.95rem; margin-bottom: 20px; }
+  .win-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
+    border: none; padding: 12px 28px; border-radius: 25px; font-size: 1rem;
+    font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  /* Toast notification */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.85); color: #fff; padding: 10px 24px;
+    border-radius: 20px; font-size: 0.9rem; font-weight: 600;
+    z-index: 200; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  /* Music toggle */
+  .music-toggle {
+    position: fixed; bottom: 16px; right: 16px; z-index: 100;
+    background: rgba(255,255,255,0.9); border: 2px solid #764ba2;
+    border-radius: 50%; width: 44px; height: 44px; font-size: 1.2rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .music-toggle.playing { background: #764ba2; }
+  @media (max-width: 420px) {
+    .cell { width: 46px; height: 46px; font-size: 1.1rem; }
+    .grid { gap: 4px; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-btn">← Back</a>
+
+<h1>Wedding Strands</h1>
+<div class="theme-clue" id="themeClue"></div>
+
+<div class="level-selector">
+  <button class="level-btn active" onclick="loadLevel('easy')">💒 Easy</button>
+  <button class="level-btn" onclick="loadLevel('medium')">🪷 Medium</button>
+  <button class="level-btn" onclick="loadLevel('hard')">💎 Hard</button>
+</div>
+
+<div class="word-list" id="wordList"></div>
+
+<div class="current-word" id="currentWord">&nbsp;</div>
+
+<div class="grid-container">
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn" onclick="clearSelection()">Clear</button>
+  <button class="ctrl-btn submit" onclick="submitWord()">Submit ✓</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-content">
+    <div class="win-emoji">🎉💍✨</div>
+    <div class="win-title">You did it!</div>
+    <div class="win-text" id="winText">All words found! You really know your wedding stuff!</div>
+    <button class="win-btn" onclick="closeWin()">Play Again</button>
+  </div>
+</div>
+
+<button class="music-toggle" id="musicBtn" title="Toggle Music">🔇</button>
+<audio id="bgMusic" loop preload="none">
+  <source src="../assets/bg-music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// ===== PUZZLE DATA =====
+const PUZZLES = {
+  easy: {
+    clue: '"What makes a wedding day special?"',
+    grid: [
+      ['W','B','R','I','D','E'],
+      ['E','L','O','V','E','H'],
+      ['D','C','A','K','E','J'],
+      ['D','R','I','N','G','S'],
+      ['I','G','R','O','O','M'],
+      ['N','F','U','P','Q','Y'],
+      ['G','T','O','A','S','T'],
+      ['V','O','W','S','Z','M']
+    ],
+    words: {
+      'WEDDING': { path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], spangram: true },
+      'BRIDE':   { path: [[0,1],[0,2],[0,3],[0,4],[0,5]], spangram: false },
+      'LOVE':    { path: [[1,1],[1,2],[1,3],[1,4]], spangram: false },
+      'CAKE':    { path: [[2,1],[2,2],[2,3],[2,4]], spangram: false },
+      'RINGS':   { path: [[3,1],[3,2],[3,3],[3,4],[3,5]], spangram: false },
+      'GROOM':   { path: [[4,1],[4,2],[4,3],[4,4],[4,5]], spangram: false },
+      'TOAST':   { path: [[6,1],[6,2],[6,3],[6,4],[6,5]], spangram: false },
+      'VOWS':    { path: [[7,0],[7,1],[7,2],[7,3]], spangram: false }
+    },
+    winMsg: "You nailed the basics! 💒"
+  },
+  medium: {
+    clue: '"Desi celebration vibes 🪷"',
+    grid: [
+      ['S','R','A','D','H','A'],
+      ['A','G','A','R','B','A'],
+      ['N','M','E','H','N','D'],
+      ['G','P','Q','U','I','F'],
+      ['E','J','A','L','E','B'],
+      ['E','K','T','W','R','I'],
+      ['T','N','A','C','H','Y'],
+      ['H','A','L','D','I','Z']
+    ],
+    words: {
+      'SANGEET': { path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], spangram: true },
+      'RADHA':   { path: [[0,1],[0,2],[0,3],[0,4],[0,5]], spangram: false },
+      'GARBA':   { path: [[1,1],[1,2],[1,3],[1,4],[1,5]], spangram: false },
+      'MEHNDI':  { path: [[2,1],[2,2],[2,3],[2,4],[2,5],[3,4]], spangram: false },
+      'JALEBI':  { path: [[4,1],[4,2],[4,3],[4,4],[4,5],[5,5]], spangram: false },
+      'NACH':    { path: [[6,1],[6,2],[6,3],[6,4]], spangram: false },
+      'HALDI':   { path: [[7,0],[7,1],[7,2],[7,3],[7,4]], spangram: false }
+    },
+    winMsg: "Desi wedding pro! You know the vibes! 🪷🎶"
+  },
+  hard: {
+    clue: '"Only true friends of Ketaki & Ash will get this 💎"',
+    grid: [
+      ['F','K','E','T','A','K'],
+      ['O','C','H','A','T','I'],
+      ['R','B','U','A','E','M'],
+      ['E','D','W','G','Q','Y'],
+      ['V','A','S','H','N','J'],
+      ['E','P','O','O','H','Z'],
+      ['R','K','I','R','P','A'],
+      ['L','E','N','S','X','L']
+    ],
+    words: {
+      'FOREVER':  { path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], spangram: true },
+      'KETAKI':   { path: [[0,1],[0,2],[0,3],[0,4],[0,5],[1,5]], spangram: false },
+      'CHATEAU':  { path: [[1,1],[1,2],[1,3],[1,4],[2,4],[2,3],[2,2]], spangram: false },
+      'ASH':      { path: [[4,1],[4,2],[4,3]], spangram: false },
+      'POOH':     { path: [[5,1],[5,2],[5,3],[5,4]], spangram: false },
+      'KIRPAL':   { path: [[6,1],[6,2],[6,3],[6,4],[6,5],[7,5]], spangram: false },
+      'LENS':     { path: [[7,0],[7,1],[7,2],[7,3]], spangram: false }
+    },
+    winMsg: "Wow! You REALLY know Ketaki & Ash! 💎👑"
+  }
+};
+
+// ===== GAME STATE =====
+let currentLevel = 'easy';
+let selectedCells = [];
+let foundWords = new Set();
+let puzzle = null;
+
+// ===== INIT =====
+function loadLevel(level) {
+  currentLevel = level;
+  puzzle = PUZZLES[level];
+  selectedCells = [];
+  foundWords = new Set();
+  
+  // Update level buttons
+  document.querySelectorAll('.level-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['easy','medium','hard'][i] === level);
+  });
+  
+  // Set theme clue
+  document.getElementById('themeClue').textContent = puzzle.clue;
+  
+  // Render word list
+  renderWordList();
+  
+  // Render grid
+  renderGrid();
+  
+  // Clear current word
+  document.getElementById('currentWord').innerHTML = '&nbsp;';
+}
+
+function renderWordList() {
+  const container = document.getElementById('wordList');
+  container.innerHTML = '';
+  for (const [word, data] of Object.entries(puzzle.words)) {
+    const chip = document.createElement('span');
+    chip.className = 'word-chip' + (data.spangram ? ' spangram' : '') + (foundWords.has(word) ? ' found' : '');
+    chip.textContent = word;
+    chip.id = 'chip-' + word;
+    container.appendChild(chip);
+  }
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  for (let r = 0; r < puzzle.grid.length; r++) {
+    for (let c = 0; c < puzzle.grid[r].length; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = puzzle.grid[r][c];
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      cell.id = `cell-${r}-${c}`;
+      
+      // Check if this cell is already part of a found word
+      for (const [word, data] of Object.entries(puzzle.words)) {
+        if (foundWords.has(word)) {
+          for (const [pr, pc] of data.path) {
+            if (pr === r && pc === c) {
+              cell.classList.add(data.spangram ? 'found-spangram' : 'found-word');
+            }
+          }
+        }
+      }
+      
+      cell.addEventListener('click', () => toggleCell(r, c));
+      cell.addEventListener('touchstart', (e) => { e.preventDefault(); toggleCell(r, c); });
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function toggleCell(row, col) {
+  const idx = selectedCells.findIndex(c => c[0] === row && c[1] === col);
+  
+  if (idx !== -1) {
+    // If it's the last selected, deselect it
+    if (idx === selectedCells.length - 1) {
+      selectedCells.pop();
+    } else {
+      // Deselect everything after this cell
+      selectedCells = selectedCells.slice(0, idx + 1);
+    }
+  } else {
+    // Check adjacency (must be adjacent to last selected cell)
+    if (selectedCells.length > 0) {
+      const [lastR, lastC] = selectedCells[selectedCells.length - 1];
+      const dr = Math.abs(row - lastR);
+      const dc = Math.abs(col - lastC);
+      if (dr > 1 || dc > 1 || (dr === 0 && dc === 0)) {
+        // Not adjacent - show feedback
+        const cell = document.getElementById(`cell-${row}-${col}`);
+        cell.classList.add('shake');
+        setTimeout(() => cell.classList.remove('shake'), 400);
+        showToast('Must be adjacent! ↕↔↗');
+        return;
+      }
+    }
+    // Check if cell is already found
+    const cellEl = document.getElementById(`cell-${row}-${col}`);
+    if (cellEl.classList.contains('found-word') || cellEl.classList.contains('found-spangram')) {
+      showToast('Already found!');
+      return;
+    }
+    selectedCells.push([row, col]);
+    const cell = document.getElementById(`cell-${row}-${col}`);
+    cell.classList.add('pop');
+    setTimeout(() => cell.classList.remove('pop'), 300);
+  }
+  
+  updateSelectionUI();
+}
+
+function updateSelectionUI() {
+  // Update cell highlights
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.classList.remove('selected');
+  });
+  selectedCells.forEach(([r, c]) => {
+    document.getElementById(`cell-${r}-${c}`).classList.add('selected');
+  });
+  
+  // Update current word display
+  const word = selectedCells.map(([r, c]) => puzzle.grid[r][c]).join('');
+  document.getElementById('currentWord').textContent = word || '\u00A0';
+}
+
+function clearSelection() {
+  selectedCells = [];
+  updateSelectionUI();
+}
+
+function submitWord() {
+  if (selectedCells.length < 2) {
+    showToast('Select at least 2 letters!');
+    return;
+  }
+  
+  const word = selectedCells.map(([r, c]) => puzzle.grid[r][c]).join('');
+  
+  // Check if this word matches any puzzle word (check path matches too)
+  let matched = false;
+  for (const [targetWord, data] of Object.entries(puzzle.words)) {
+    if (word === targetWord && !foundWords.has(targetWord)) {
+      // Verify path matches
+      if (pathsMatch(selectedCells, data.path)) {
+        foundWords.add(targetWord);
+        matched = true;
+        
+        // Highlight cells
+        selectedCells.forEach(([r, c]) => {
+          const cell = document.getElementById(`cell-${r}-${c}`);
+          cell.classList.remove('selected');
+          cell.classList.add(data.spangram ? 'found-spangram' : 'found-word');
+        });
+        
+        // Update word chip
+        const chip = document.getElementById('chip-' + targetWord);
+        if (chip) chip.classList.add('found');
+        
+        if (data.spangram) {
+          showToast('⭐ SPANGRAM! ⭐');
+        } else {
+          showToast('✓ ' + targetWord + '!');
+        }
+        
+        selectedCells = [];
+        updateSelectionUI();
+        
+        // Check win
+        if (foundWords.size === Object.keys(puzzle.words).length) {
+          setTimeout(showWin, 800);
+        }
+        break;
+      }
+    }
+  }
+  
+  if (!matched) {
+    // Check if word matches but wrong path
+    const wordExists = Object.keys(puzzle.words).includes(word);
+    if (wordExists && foundWords.has(word)) {
+      showToast('Already found!');
+    } else if (word.length < 3) {
+      showToast('Too short!');
+    } else {
+      showToast('Not a theme word 🤔');
+      // Shake selected cells
+      selectedCells.forEach(([r, c]) => {
+        const cell = document.getElementById(`cell-${r}-${c}`);
+        cell.classList.add('shake');
+        setTimeout(() => cell.classList.remove('shake'), 400);
+      });
+    }
+    selectedCells = [];
+    updateSelectionUI();
+  }
+}
+
+function pathsMatch(selected, target) {
+  if (selected.length !== target.length) return false;
+  for (let i = 0; i < selected.length; i++) {
+    if (selected[i][0] !== target[i][0] || selected[i][1] !== target[i][1]) return false;
+  }
+  return true;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function showWin() {
+  document.getElementById('winText').textContent = puzzle.winMsg;
+  document.getElementById('winOverlay').classList.add('active');
+}
+
+function closeWin() {
+  document.getElementById('winOverlay').classList.remove('active');
+  loadLevel(currentLevel);
+}
+
+// Music toggle
+const musicBtn = document.getElementById('musicBtn');
+const bgMusic = document.getElementById('bgMusic');
+let playing = false;
+musicBtn.addEventListener('click', () => {
+  if (playing) {
+    bgMusic.pause();
+    musicBtn.textContent = '🔇';
+    musicBtn.classList.remove('playing');
+  } else {
+    bgMusic.volume = 0.2;
+    bgMusic.play().catch(() => {});
+    musicBtn.textContent = '🎵';
+    musicBtn.classList.add('playing');
+  }
+  playing = !playing;
+});
+
+// Keyboard support
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitWord();
+  if (e.key === 'Escape' || e.key === 'Backspace') clearSelection();
+});
+
+// Init
+loadLevel('easy');
+</script>
+</body>
+</html>

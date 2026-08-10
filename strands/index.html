@@ -24,16 +24,19 @@
   .back-btn:hover { background: #fff; }
   h1 {
     font-family: 'Sacramento', cursive; font-size: 2.4rem; color: #d4727a;
-    text-shadow: 1px 1px 4px rgba(212,114,122,0.15); margin-bottom: 4px; margin-top: 10px;
+    text-shadow: 1px 1px 4px rgba(212,114,122,0.15); margin-bottom: 2px; margin-top: 10px;
+  }
+  .game-ref {
+    font-family: 'Special Elite', cursive; font-size: 0.7rem; color: #b89a9d;
+    margin-bottom: 6px; letter-spacing: 0.5px;
   }
   .theme-clue {
     font-family: 'Special Elite', cursive;
     font-size: 1rem; color: #b0636a; margin-bottom: 16px;
-    font-weight: 400; font-style: normal;
+    font-weight: 400;
   }
-  /* Level selector */
   .level-selector {
-    display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;
+    display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center;
   }
   .level-btn {
     background: rgba(255,255,255,0.6); border: 2px solid rgba(212,114,122,0.25);
@@ -43,10 +46,31 @@
   }
   .level-btn:hover { background: rgba(255,255,255,0.8); }
   .level-btn.active { background: #fff; color: #d4727a; border-color: #d4727a; box-shadow: 0 2px 12px rgba(212,114,122,0.2); }
-  /* Word list */
+
+  /* Progress + hint area */
+  .progress-area {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .progress-text { font-size: 0.85rem; color: #9e5a60; font-weight: 600; }
+  .hint-btn {
+    background: rgba(255,255,255,0.7); border: 1.5px solid rgba(212,114,122,0.3);
+    color: #d4727a; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem;
+    font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .hint-btn:hover { background: #fff; }
+  .hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* DEV: Word list (visible during dev, will remove later) */
   .word-list {
     display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-    margin-bottom: 16px; max-width: 380px;
+    margin-bottom: 12px; max-width: 380px;
+    border: 1px dashed rgba(212,114,122,0.3); padding: 8px; border-radius: 8px;
+    background: rgba(255,255,200,0.3);
+  }
+  .word-list::before {
+    content: '🛠 DEV - Words visible'; display: block; width: 100%;
+    font-size: 0.65rem; color: #999; text-align: center; margin-bottom: 4px;
   }
   .word-chip {
     background: rgba(255,255,255,0.7); border: 1.5px solid rgba(212,114,122,0.25);
@@ -59,6 +83,7 @@
   }
   .word-chip.spangram { border-color: #d4727a; color: #d4727a; font-weight: 700; }
   .word-chip.spangram.found { background: #d4727a; color: #fff; border-color: #d4727a; }
+
   /* Grid */
   .grid-container {
     background: rgba(255,255,255,0.6); border-radius: 16px;
@@ -82,12 +107,27 @@
     background: #d4727a; color: #fff; border-color: #c0616a;
     transform: scale(1.08); box-shadow: 0 2px 12px rgba(212,114,122,0.4);
   }
-  .cell.found-word {
-    background: #f0c4c8; color: #8b4049; border-color: #e8a0a6;
+  .cell.found-word { color: #5a2a30; border-color: #e8a0a6; }
+  .cell.found-spangram { background: #d4727a; color: #fff; border-color: #b85a62; }
+  .cell.word-color-0 { background: #f0c4c8; }
+  .cell.word-color-1 { background: #c8e6c9; }
+  .cell.word-color-2 { background: #bbdefb; }
+  .cell.word-color-3 { background: #fff9c4; }
+  .cell.word-color-4 { background: #e1bee7; }
+  .cell.word-color-5 { background: #ffe0b2; }
+  .cell.word-color-6 { background: #b2dfdb; }
+  .cell.word-color-7 { background: #f8bbd0; }
+  .cell.word-color-8 { background: #d1c4e9; }
+  .cell.hinted {
+    border-color: #d4727a; border-width: 3px;
+    box-shadow: 0 0 10px rgba(212,114,122,0.5);
+    animation: pulse-hint 1s ease-in-out 3;
   }
-  .cell.found-spangram {
-    background: #d4727a; color: #fff; border-color: #b85a62;
+  @keyframes pulse-hint {
+    0%,100% { box-shadow: 0 0 6px rgba(212,114,122,0.3); }
+    50% { box-shadow: 0 0 14px rgba(212,114,122,0.7); }
   }
+  .cell.revealed { border-color: #d4727a; opacity: 0.85; }
   .cell.shake { animation: shake 0.4s; }
   @keyframes shake {
     0%,100% { transform: translateX(0); }
@@ -100,14 +140,12 @@
     50% { transform: scale(1.3); }
     100% { transform: scale(1.08); }
   }
-  /* Current word display */
   .current-word {
     font-size: 1.4rem; font-weight: 700; color: #9e5a60; min-height: 36px;
     margin-bottom: 12px; letter-spacing: 2px;
     text-shadow: 1px 1px 4px rgba(212,114,122,0.1);
   }
-  /* Controls */
-  .controls { display: flex; gap: 12px; margin-bottom: 20px; }
+  .controls { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
   .ctrl-btn {
     background: rgba(255,255,255,0.7); border: 1.5px solid rgba(212,114,122,0.25);
     color: #9e5a60; padding: 10px 20px; border-radius: 25px; font-size: 0.85rem;
@@ -116,6 +154,8 @@
   .ctrl-btn:hover { background: rgba(255,255,255,0.9); }
   .ctrl-btn.submit { background: #d4727a; border-color: #d4727a; color: #fff; }
   .ctrl-btn.submit:hover { background: #c0616a; }
+  .ctrl-btn.reveal { background: rgba(255,255,255,0.5); border-color: #b89a9d; color: #b89a9d; font-size: 0.78rem; }
+  .ctrl-btn.reveal:hover { border-color: #d4727a; color: #d4727a; }
   /* Win overlay */
   .win-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -135,16 +175,14 @@
     border: none; padding: 12px 28px; border-radius: 25px; font-size: 1rem;
     font-weight: 700; cursor: pointer; font-family: inherit;
   }
-  /* Toast notification */
   .toast {
     position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
     background: rgba(0,0,0,0.85); color: #fff; padding: 10px 24px;
     border-radius: 20px; font-size: 0.9rem; font-weight: 600;
     z-index: 200; opacity: 0; transition: opacity 0.3s;
-    pointer-events: none;
+    pointer-events: none; max-width: 90%; text-align: center;
   }
   .toast.show { opacity: 1; }
-  /* Music toggle */
   .music-toggle {
     position: fixed; bottom: 16px; right: 16px; z-index: 100;
     background: rgba(255,255,255,0.9); border: 2px solid #d4727a;
@@ -161,7 +199,7 @@
     .level-btn { padding: 8px 14px; font-size: 0.8rem; }
     .word-chip { font-size: 0.7rem; padding: 4px 8px; }
     .current-word { font-size: 1.1rem; }
-    .ctrl-btn { padding: 10px 16px; font-size: 0.8rem; }
+    .ctrl-btn { padding: 10px 14px; font-size: 0.8rem; }
     .back-btn { padding: 6px 12px; font-size: 0.8rem; }
     .music-toggle { width: 38px; height: 38px; font-size: 1rem; }
     .grid-container { padding: 8px; }
@@ -172,7 +210,7 @@
     h1 { font-size: 1.5rem; }
     .level-selector { gap: 6px; }
     .level-btn { padding: 6px 10px; font-size: 0.75rem; }
-    .controls { gap: 8px; }
+    .controls { gap: 6px; }
   }
   @supports (padding: env(safe-area-inset-bottom)) {
     .music-toggle { bottom: calc(16px + env(safe-area-inset-bottom)); }
@@ -184,6 +222,7 @@
 <a href="../index.html" class="back-btn">← Back</a>
 
 <h1>Wedding Strands</h1>
+<p class="game-ref">(based on the popular NYT Strands game)</p>
 <div class="theme-clue" id="themeClue"></div>
 
 <div class="level-selector">
@@ -192,6 +231,13 @@
   <button class="level-btn" onclick="loadLevel('hard')">💎 Hard</button>
 </div>
 
+<!-- Progress + Hint -->
+<div class="progress-area">
+  <span class="progress-text" id="progressText">0 / 8 found</span>
+  <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 Hint (3)</button>
+</div>
+
+<!-- DEV: Word list visible during development -->
 <div class="word-list" id="wordList"></div>
 
 <div class="current-word" id="currentWord">&nbsp;</div>
@@ -203,6 +249,7 @@
 <div class="controls">
   <button class="ctrl-btn" onclick="clearSelection()">Clear</button>
   <button class="ctrl-btn submit" onclick="submitWord()">Submit ✓</button>
+  <button class="ctrl-btn reveal" onclick="revealPuzzle()">👁 Reveal All</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -211,7 +258,7 @@
   <div class="win-content">
     <div class="win-emoji">🎉💍✨</div>
     <div class="win-title">You did it!</div>
-    <div class="win-text" id="winText">All words found! You really know your wedding stuff!</div>
+    <div class="win-text" id="winText">All words found!</div>
     <button class="win-btn" onclick="closeWin()">Play Again</button>
   </div>
 </div>
@@ -223,74 +270,82 @@
 
 <script>
 // ===== PUZZLE DATA =====
+// Words use: horizontal, vertical, diagonal, backwards, snaking paths
+// Each path is [row, col] tracing adjacent cells (including diagonals)
 const PUZZLES = {
   easy: {
     clue: '"What makes a wedding day special?"',
+    // 8 rows × 6 cols
     grid: [
-      ['W','B','R','I','D','E'],
-      ['E','L','O','V','E','H'],
-      ['D','C','A','K','E','J'],
-      ['D','R','I','N','G','S'],
-      ['I','G','R','O','O','M'],
-      ['N','F','U','P','Q','Y'],
-      ['G','T','O','A','S','T'],
-      ['V','O','W','S','Z','M']
+      ['G','R','O','O','T','O'],
+      ['A','S','L','M','B','A'],
+      ['I','S','E','R','T','S'],
+      ['O','W','I','E','C','Y'],
+      ['V','D','E','K','A','A'],
+      ['E','C','N','A','D','D'],
+      ['S','G','N','I','R','G'],
+      ['W','E','D','D','I','N']
     ],
     words: {
-      'WEDDING': { path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], spangram: true },
-      'BRIDE':   { path: [[0,1],[0,2],[0,3],[0,4],[0,5]], spangram: false },
-      'LOVE':    { path: [[1,1],[1,2],[1,3],[1,4]], spangram: false },
-      'CAKE':    { path: [[2,1],[2,2],[2,3],[2,4]], spangram: false },
-      'RINGS':   { path: [[3,1],[3,2],[3,3],[3,4],[3,5]], spangram: false },
-      'GROOM':   { path: [[4,1],[4,2],[4,3],[4,4],[4,5]], spangram: false },
-      'TOAST':   { path: [[6,1],[6,2],[6,3],[6,4],[6,5]], spangram: false },
-      'VOWS':    { path: [[7,0],[7,1],[7,2],[7,3]], spangram: false }
+      'WEDDINGDAY': { path: [[7,0],[7,1],[7,2],[7,3],[7,4],[7,5],[6,5],[5,5],[4,5],[3,5]], spangram: true },
+      'GROOM':   { path: [[0,0],[0,1],[0,2],[0,3],[1,3]], spangram: false },
+      'TOAST':   { path: [[0,4],[0,5],[1,5],[2,5],[2,4]], spangram: false },
+      'AISLE':   { path: [[1,0],[2,0],[1,1],[1,2],[2,2]], spangram: false },
+      'VOWS':    { path: [[4,0],[3,0],[3,1],[2,1]], spangram: false },
+      'BRIDE':   { path: [[1,4],[2,3],[3,2],[4,1],[5,0]], spangram: false },
+      'CAKE':    { path: [[3,4],[4,4],[4,3],[3,3]], spangram: false },
+      'RINGS':   { path: [[6,4],[6,3],[6,2],[6,1],[6,0]], spangram: false },
+      'DANCE':   { path: [[5,4],[5,3],[5,2],[5,1],[4,2]], spangram: false }
     },
     winMsg: "You nailed the basics! 💒"
   },
+
   medium: {
     clue: '"Desi celebration vibes 🪷"',
     grid: [
-      ['S','R','A','D','H','A'],
-      ['A','G','A','R','B','A'],
-      ['N','M','E','H','N','D'],
-      ['G','P','Q','U','I','F'],
-      ['E','J','A','L','E','B'],
-      ['E','K','T','W','R','I'],
-      ['T','N','A','C','H','Y'],
-      ['H','A','L','D','I','Z']
+      ['B','G','O','L','D','S'],
+      ['O','O','C','K','T','H'],
+      ['L','M','L','I','A','E'],
+      ['L','A','R','T','Y','R'],
+      ['Y','P','K','U','R','W'],
+      ['W','H','E','A','T','A'],
+      ['O','L','N','N','A','N'],
+      ['O','D','O','V','E','I']
     ],
     words: {
-      'SANGEET': { path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], spangram: true },
-      'RADHA':   { path: [[0,1],[0,2],[0,3],[0,4],[0,5]], spangram: false },
-      'GARBA':   { path: [[1,1],[1,2],[1,3],[1,4],[1,5]], spangram: false },
-      'MEHNDI':  { path: [[2,1],[2,2],[2,3],[2,4],[2,5],[3,4]], spangram: false },
-      'JALEBI':  { path: [[4,1],[4,2],[4,3],[4,4],[4,5],[5,5]], spangram: false },
-      'NACH':    { path: [[6,1],[6,2],[6,3],[6,4]], spangram: false },
-      'HALDI':   { path: [[7,0],[7,1],[7,2],[7,3],[7,4]], spangram: false }
+      'BOLLYWOOD': { path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[7,1]], spangram: true },
+      'SHERWANI':  { path: [[0,5],[1,5],[2,5],[3,5],[4,5],[5,5],[6,5],[7,5]], spangram: false },
+      'GOLD':      { path: [[0,1],[0,2],[0,3],[0,4]], spangram: false },
+      'MOCKTAIL':  { path: [[2,1],[1,1],[1,2],[1,3],[1,4],[2,4],[2,3],[2,2]], spangram: false },
+      'PARTY':     { path: [[4,1],[3,1],[3,2],[3,3],[3,4]], spangram: false },
+      'KURTA':     { path: [[4,2],[4,3],[4,4],[5,4],[5,3]], spangram: false },
+      'HENNA':     { path: [[5,1],[5,2],[6,2],[6,3],[6,4]], spangram: false },
+      'LOVE':      { path: [[6,1],[7,2],[7,3],[7,4]], spangram: false }
     },
-    winMsg: "Desi wedding pro! You know the vibes! 🪷🎶"
+    winMsg: "Desi wedding pro! 🪷🎶"
   },
+
   hard: {
     clue: '"Only true friends of Ketaki & Ash will get this 💎"',
     grid: [
-      ['F','K','E','T','A','K'],
-      ['O','C','H','A','T','I'],
-      ['R','B','U','A','E','M'],
-      ['E','D','W','G','Q','Y'],
-      ['V','A','S','H','N','J'],
-      ['E','P','O','O','H','Z'],
-      ['R','K','I','R','P','A'],
-      ['L','E','N','S','X','L']
+      ['C','O','L','D','P','L'],
+      ['F','C','H','A','I','A'],
+      ['O','S','A','R','E','Y'],
+      ['R','K','E','T','E','L'],
+      ['E','I','K','A','V','O'],
+      ['V','P','U','T','H','E'],
+      ['E','C','N','A','R','U'],
+      ['R','H','A','T','E','A']
     ],
     words: {
-      'FOREVER':  { path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]], spangram: true },
-      'KETAKI':   { path: [[0,1],[0,2],[0,3],[0,4],[0,5],[1,5]], spangram: false },
-      'CHATEAU':  { path: [[1,1],[1,2],[1,3],[1,4],[2,4],[2,3],[2,2]], spangram: false },
-      'ASH':      { path: [[4,1],[4,2],[4,3]], spangram: false },
-      'POOH':     { path: [[5,1],[5,2],[5,3],[5,4]], spangram: false },
-      'KIRPAL':   { path: [[6,1],[6,2],[6,3],[6,4],[6,5],[7,5]], spangram: false },
-      'LENS':     { path: [[7,0],[7,1],[7,2],[7,3]], spangram: false }
+      'COLDPLAY':  { path: [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[1,5],[2,5]], spangram: true },
+      'FOREVER':   { path: [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]], spangram: false },
+      'CHAI':      { path: [[1,1],[1,2],[1,3],[1,4]], spangram: false },
+      'SAREE':     { path: [[2,1],[2,2],[2,3],[2,4],[3,4]], spangram: false },
+      'KETAKI':    { path: [[3,1],[3,2],[3,3],[4,3],[4,2],[4,1]], spangram: false },
+      'LOVE':      { path: [[3,5],[4,5],[4,4],[5,5]], spangram: false },
+      'PUTHRAN':   { path: [[5,1],[5,2],[5,3],[5,4],[6,4],[6,3],[6,2]], spangram: false },
+      'CHATEAU':   { path: [[6,1],[7,1],[7,2],[7,3],[7,4],[7,5],[6,5]], spangram: false }
     },
     winMsg: "Wow! You REALLY know Ketaki & Ash! 💎👑"
   }
@@ -301,6 +356,8 @@ let currentLevel = 'easy';
 let selectedCells = [];
 let foundWords = new Set();
 let puzzle = null;
+let hintsUsed = 0;
+const MAX_HINTS = 3;
 
 // ===== INIT =====
 function loadLevel(level) {
@@ -308,26 +365,28 @@ function loadLevel(level) {
   puzzle = PUZZLES[level];
   selectedCells = [];
   foundWords = new Set();
+  hintsUsed = 0;
   
-  // Update level buttons
   document.querySelectorAll('.level-btn').forEach((btn, i) => {
     btn.classList.toggle('active', ['easy','medium','hard'][i] === level);
   });
   
-  // Set theme clue
   document.getElementById('themeClue').textContent = puzzle.clue;
-  
-  // Render word list
+  updateProgress();
   renderWordList();
-  
-  // Render grid
   renderGrid();
-  
-  // Clear current word
   document.getElementById('currentWord').innerHTML = '&nbsp;';
 }
 
+function updateProgress() {
+  const total = Object.keys(puzzle.words).length;
+  document.getElementById('progressText').textContent = `${foundWords.size} / ${total} found`;
+  document.getElementById('hintBtn').disabled = hintsUsed >= MAX_HINTS;
+  document.getElementById('hintBtn').textContent = `💡 Hint (${MAX_HINTS - hintsUsed})`;
+}
+
 function renderWordList() {
+  // DEV MODE: shows all words (will be hidden in production)
   const container = document.getElementById('wordList');
   container.innerHTML = '';
   for (const [word, data] of Object.entries(puzzle.words)) {
@@ -342,6 +401,7 @@ function renderWordList() {
 function renderGrid() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
+  const wordKeys = Object.keys(puzzle.words);
   for (let r = 0; r < puzzle.grid.length; r++) {
     for (let c = 0; c < puzzle.grid[r].length; c++) {
       const cell = document.createElement('div');
@@ -351,12 +411,12 @@ function renderGrid() {
       cell.dataset.col = c;
       cell.id = `cell-${r}-${c}`;
       
-      // Check if this cell is already part of a found word
       for (const [word, data] of Object.entries(puzzle.words)) {
         if (foundWords.has(word)) {
           for (const [pr, pc] of data.path) {
             if (pr === r && pc === c) {
               cell.classList.add(data.spangram ? 'found-spangram' : 'found-word');
+              cell.classList.add('word-color-' + wordKeys.indexOf(word));
             }
           }
         }
@@ -373,29 +433,25 @@ function toggleCell(row, col) {
   const idx = selectedCells.findIndex(c => c[0] === row && c[1] === col);
   
   if (idx !== -1) {
-    // If it's the last selected, deselect it
     if (idx === selectedCells.length - 1) {
       selectedCells.pop();
     } else {
-      // Deselect everything after this cell
       selectedCells = selectedCells.slice(0, idx + 1);
     }
   } else {
-    // Check adjacency (must be adjacent to last selected cell)
+    // Check adjacency (8-directional: horizontal, vertical, diagonal)
     if (selectedCells.length > 0) {
       const [lastR, lastC] = selectedCells[selectedCells.length - 1];
       const dr = Math.abs(row - lastR);
       const dc = Math.abs(col - lastC);
       if (dr > 1 || dc > 1 || (dr === 0 && dc === 0)) {
-        // Not adjacent - show feedback
         const cell = document.getElementById(`cell-${row}-${col}`);
         cell.classList.add('shake');
         setTimeout(() => cell.classList.remove('shake'), 400);
-        showToast('Must be adjacent! ↕↔↗');
+        showToast('Must be adjacent! ↕↔↗↘');
         return;
       }
     }
-    // Check if cell is already found
     const cellEl = document.getElementById(`cell-${row}-${col}`);
     if (cellEl.classList.contains('found-word') || cellEl.classList.contains('found-spangram')) {
       showToast('Already found!');
@@ -411,15 +467,10 @@ function toggleCell(row, col) {
 }
 
 function updateSelectionUI() {
-  // Update cell highlights
-  document.querySelectorAll('.cell').forEach(cell => {
-    cell.classList.remove('selected');
-  });
+  document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('selected'));
   selectedCells.forEach(([r, c]) => {
     document.getElementById(`cell-${r}-${c}`).classList.add('selected');
   });
-  
-  // Update current word display
   const word = selectedCells.map(([r, c]) => puzzle.grid[r][c]).join('');
   document.getElementById('currentWord').textContent = word || '\u00A0';
 }
@@ -437,54 +488,61 @@ function submitWord() {
   
   const word = selectedCells.map(([r, c]) => puzzle.grid[r][c]).join('');
   
-  // Check if this word matches any puzzle word (check path matches too)
+  // Check against theme words (match by word text, any valid adjacent path)
   let matched = false;
   for (const [targetWord, data] of Object.entries(puzzle.words)) {
     if (word === targetWord && !foundWords.has(targetWord)) {
-      // Verify path matches
-      if (pathsMatch(selectedCells, data.path)) {
-        foundWords.add(targetWord);
-        matched = true;
-        
-        // Highlight cells
-        selectedCells.forEach(([r, c]) => {
-          const cell = document.getElementById(`cell-${r}-${c}`);
-          cell.classList.remove('selected');
-          cell.classList.add(data.spangram ? 'found-spangram' : 'found-word');
-        });
-        
-        // Update word chip
-        const chip = document.getElementById('chip-' + targetWord);
-        if (chip) chip.classList.add('found');
-        
-        if (data.spangram) {
-          showToast('⭐ SPANGRAM! ⭐');
-        } else {
-          showToast('✓ ' + targetWord + '!');
-        }
-        
-        selectedCells = [];
-        updateSelectionUI();
-        
-        // Check win
-        if (foundWords.size === Object.keys(puzzle.words).length) {
-          setTimeout(showWin, 800);
-        }
-        break;
+      foundWords.add(targetWord);
+      matched = true;
+      
+      // Highlight user's selected cells
+      const colorIdx = Object.keys(puzzle.words).indexOf(targetWord);
+      selectedCells.forEach(([r, c]) => {
+        const cell = document.getElementById(`cell-${r}-${c}`);
+        cell.classList.remove('selected');
+        cell.classList.add(data.spangram ? 'found-spangram' : 'found-word');
+        cell.classList.add('word-color-' + colorIdx);
+      });
+      
+      const chip = document.getElementById('chip-' + targetWord);
+      if (chip) chip.classList.add('found');
+      
+      if (data.spangram) {
+        showToast('⭐ SPANGRAM! ⭐');
+      } else {
+        showToast('✓ ' + targetWord + '!');
       }
+      
+      selectedCells = [];
+      updateSelectionUI();
+      updateProgress();
+      
+      if (foundWords.size === Object.keys(puzzle.words).length) {
+        setTimeout(showWin, 800);
+      }
+      break;
     }
   }
   
   if (!matched) {
-    // Check if word matches but wrong path
-    const wordExists = Object.keys(puzzle.words).includes(word);
-    if (wordExists && foundWords.has(word)) {
-      showToast('Already found!');
-    } else if (word.length < 3) {
-      showToast('Too short!');
+    if (word.length < 3) {
+      showToast('Too short! Need 3+ letters');
+    } else if (Object.keys(puzzle.words).includes(word) && foundWords.has(word)) {
+      showToast('Already found! ✓');
     } else {
-      showToast('Not a theme word 🤔');
-      // Shake selected cells
+      // Not a theme word — only say "nice find" for real words
+      const commonWords = new Set(['ABLE','AREA','BACK','BEEN','BEST','BOTH','CAKE','CALL','CAME','CARE','CASE','CHAT','COME','COOL','DARE','DARK','DATA','DEAL','DEEP','DOES','DONE','DOWN','DRAW','DROP','EACH','EASE','EAST','EDGE','EVEN','EVER','EVIL','FACE','FACT','FAIR','FALL','FAST','FEAR','FEEL','FILL','FIND','FINE','FIRE','FIVE','FLAT','FLOW','FOOD','FOOT','FORM','FOUR','FREE','FROM','FULL','GAIN','GAME','GAVE','GIFT','GIRL','GIVE','GLAD','GOAL','GOES','GOLD','GONE','GOOD','GREW','GROW','HAIR','HALF','HALL','HAND','HANG','HARD','HARM','HATE','HAVE','HEAD','HEAR','HEAT','HELP','HERE','HERO','HIGH','HILL','HOLD','HOLE','HOME','HOPE','HOST','HOUR','HUGE','HUNG','HUNT','HURT','IDEA','INTO','IRON','ITEM','JOIN','JUMP','JUST','KEEN','KEEP','KEPT','KICK','KIDS','KILL','KIND','KING','KNEE','KNEW','KNOW','LACK','LAID','LAKE','LAND','LANE','LAST','LATE','LEAD','LEFT','LEND','LESS','LIFE','LIFT','LIKE','LINE','LINK','LIST','LIVE','LOCK','LONG','LOOK','LORD','LOSE','LOSS','LOST','LOTS','LUCK','MADE','MAIL','MAIN','MAKE','MALE','MARK','MASS','MEAL','MEAN','MEAT','MEET','MILD','MILE','MIND','MINE','MISS','MODE','MOOD','MOON','MORE','MOST','MOVE','MUCH','MUST','NAME','NEAR','NEAT','NECK','NEED','NEWS','NEXT','NICE','NINE','NODE','NONE','NOON','NOTE','ODDS','OKAY','ONCE','ONLY','ONTO','OPEN','OVER','PACE','PACK','PAGE','PAID','PAIN','PAIR','PALE','PALM','PARK','PART','PASS','PAST','PATH','PEAK','PICK','PINE','PINK','PIPE','PLAN','PLAY','PLOT','PLUS','POEM','POET','POLL','POND','POOL','POOR','PORT','POST','POUR','PULL','PUMP','PURE','PUSH','QUIT','RACE','RAIN','RANK','RARE','RATE','READ','REAL','REAR','RELY','RENT','REST','RICE','RICH','RIDE','RING','RISE','RISK','ROAD','ROCK','RODE','ROLE','ROLL','ROOF','ROOM','ROOT','ROPE','ROSE','RUSH','SAFE','SAID','SAIL','SAKE','SALE','SALT','SAME','SAND','SANG','SAVE','SEAL','SEAT','SEED','SEEK','SEEM','SEEN','SELF','SELL','SEND','SENT','SHED','SHIP','SHOP','SHOT','SHOW','SHUT','SICK','SIDE','SIGN','SILK','SITE','SIZE','SKIN','SLIP','SLOW','SNOW','SOFT','SOIL','SOLD','SOLE','SOME','SONG','SOON','SORT','SOUL','SPOT','STAR','STAY','STEM','STEP','STOP','SURE','SWIM','TAIL','TAKE','TALE','TALK','TALL','TANK','TAPE','TASK','TEAM','TEAR','TELL','TEND','TERM','TEST','TEXT','THAN','THAT','THEM','THEN','THEY','THIN','THIS','THUS','TIED','TILL','TIME','TINY','TIRE','TOLD','TOLL','TONE','TOOK','TOOL','TOPS','TORE','TORN','TOUR','TOWN','TRAP','TREE','TRIM','TRIO','TRIP','TRUE','TUBE','TUNE','TURN','TWIN','TYPE','UNIT','UPON','USED','USER','VARY','VAST','VERB','VERY','VICE','VIEW','VOTE','WAGE','WAIT','WAKE','WALK','WALL','WANT','WARD','WARM','WARN','WASH','WAVE','WEAK','WEAR','WEEK','WELL','WENT','WERE','WEST','WHAT','WHEN','WHOM','WIDE','WIFE','WILD','WILL','WIND','WINE','WING','WIRE','WISE','WISH','WITH','WOOD','WORD','WORE','WORK','WORN','WRAP','YARD','YEAR','YOUR','ZERO','ZONE']);
+      if (commonWords.has(word) || word.length >= 5) {
+        const msgs = [
+          `"${word}" — nice find, but not a theme word!`,
+          `"${word}" — good eye! Not in this puzzle though 🤔`,
+          `"${word}" — real word, but not what we need!`,
+          `"${word}" — keep looking! Think about the clue 💭`,
+        ];
+        showToast(msgs[Math.floor(Math.random() * msgs.length)]);
+      } else {
+        showToast('Not a word! Try again 🙅');
+      }
       selectedCells.forEach(([r, c]) => {
         const cell = document.getElementById(`cell-${r}-${c}`);
         cell.classList.add('shake');
@@ -496,19 +554,53 @@ function submitWord() {
   }
 }
 
-function pathsMatch(selected, target) {
-  if (selected.length !== target.length) return false;
-  for (let i = 0; i < selected.length; i++) {
-    if (selected[i][0] !== target[i][0] || selected[i][1] !== target[i][1]) return false;
+// ===== HINT SYSTEM =====
+function useHint() {
+  if (hintsUsed >= MAX_HINTS) return;
+  
+  // Find next unfound word and circle ALL its cells
+  for (const [word, data] of Object.entries(puzzle.words)) {
+    if (!foundWords.has(word)) {
+      hintsUsed++;
+      data.path.forEach(([r, c]) => {
+        const cell = document.getElementById(`cell-${r}-${c}`);
+        cell.classList.add('hinted');
+        setTimeout(() => cell.classList.remove('hinted'), 5000);
+      });
+      showToast(`💡 ${data.path.length} letters — form the word!`);
+      updateProgress();
+      break;
+    }
   }
-  return true;
+}
+
+// ===== REVEAL ALL =====
+function revealPuzzle() {
+  if (!confirm('Reveal all answers? This will show the full solution.')) return;
+  
+  const wordKeys = Object.keys(puzzle.words);
+  for (const [word, data] of Object.entries(puzzle.words)) {
+    foundWords.add(word);
+    const colorIdx = wordKeys.indexOf(word);
+    data.path.forEach(([r, c]) => {
+      const cell = document.getElementById(`cell-${r}-${c}`);
+      cell.classList.remove('selected');
+      cell.classList.add(data.spangram ? 'found-spangram' : 'found-word');
+      cell.classList.add('word-color-' + colorIdx);
+      cell.classList.add('revealed');
+    });
+    const chip = document.getElementById('chip-' + word);
+    if (chip) chip.classList.add('found');
+  }
+  updateProgress();
+  showToast('All answers revealed! 👀');
 }
 
 function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 1800);
+  setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
 function showWin() {
@@ -539,13 +631,11 @@ musicBtn.addEventListener('click', () => {
   playing = !playing;
 });
 
-// Keyboard support
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') submitWord();
   if (e.key === 'Escape' || e.key === 'Backspace') clearSelection();
 });
 
-// Init
 loadLevel('easy');
 </script>
 </body>

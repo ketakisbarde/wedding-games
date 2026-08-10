@@ -194,28 +194,27 @@
 
   /* Couple stickers */
   .stickers {
-    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
-    margin-bottom: 28px;
+    display: flex; justify-content: center; align-items: flex-end;
+    gap: 8px; flex-wrap: wrap;
+    margin-bottom: 32px;
   }
   .sticker {
-    width: 120px; height: auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 160px; height: auto;
     transition: transform 0.3s;
-    background: #fff;
-    padding: 6px;
-    border: 1px solid #e8ddd8;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
   }
-  .sticker:nth-child(1) { transform: rotate(-3deg); }
-  .sticker:nth-child(2) { transform: rotate(2deg); }
-  .sticker:nth-child(3) { transform: rotate(-1.5deg); }
+  .sticker:nth-child(1) { transform: rotate(-2deg); }
+  .sticker:nth-child(2) { transform: rotate(1deg) translateY(-8px); z-index: 1; width: 170px; }
+  .sticker:nth-child(3) { transform: rotate(-1deg); }
   .sticker:hover { transform: scale(1.08) rotate(0deg); z-index: 2; }
   @media (max-width: 500px) {
-    .sticker { width: 95px; padding: 4px; }
-    .stickers { gap: 8px; margin-bottom: 20px; }
+    .sticker { width: 120px; }
+    .sticker:nth-child(2) { width: 130px; }
+    .stickers { gap: 4px; margin-bottom: 22px; }
   }
   @media (max-width: 360px) {
-    .sticker { width: 80px; }
+    .sticker { width: 95px; }
+    .sticker:nth-child(2) { width: 105px; }
   }
 </style>
 </head>
@@ -251,14 +250,14 @@
       </div>
     </a>
 
-    <div class="game-card coming-soon">
-      <div class="game-icon">🎯</div>
+    <a href="mini/index.html" class="game-card">
+      <div class="game-icon">✏️</div>
       <div class="game-info">
-        <div class="game-title">Coming Soon...</div>
-        <div class="game-desc">More games on the way! Stay tuned.</div>
-        <span class="game-badge">Coming Soon</span>
+        <div class="game-title">Mini Crossword</div>
+        <div class="game-desc">A tiny crossword about us — can you fill every square?</div>
+        <span class="game-badge">Play Now</span>
       </div>
-    </div>
+    </a>
   </div>
 
   <p class="footer">Made with 💕 for our wedding day</p>

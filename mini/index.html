@@ -236,7 +236,10 @@ function renderGrid() {
           num.textContent = numberMap[numKey];
           cell.appendChild(num);
         }
-        cell.textContent = userGrid[r][c] || '';
+        const letter = document.createElement('span');
+        letter.className = 'letter';
+        letter.textContent = userGrid[r][c] || '';
+        cell.appendChild(letter);
         cell.addEventListener('click', () => selectCell(r, c));
       }
       grid.appendChild(cell);

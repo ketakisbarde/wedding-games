@@ -225,6 +225,43 @@
   @supports (padding: env(safe-area-inset-bottom)) {
     .music-toggle { bottom: calc(16px + env(safe-area-inset-bottom)); }
   }
+
+  /* How to play */
+  .how-link {
+    font-family: 'Special Elite', cursive; font-size: 0.8rem;
+    color: #b0636a; cursor: pointer; margin-bottom: 12px;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .how-link:hover { color: #d4727a; }
+  .how-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 500;
+    justify-content: center; align-items: center;
+  }
+  .how-overlay.active { display: flex; }
+  .how-card {
+    background: #fff; border-radius: 16px; padding: 28px 24px;
+    max-width: 360px; width: 90%; position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    max-height: 85vh; overflow-y: auto;
+  }
+  .how-close {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: none; font-size: 1.5rem;
+    cursor: pointer; color: #999; line-height: 1;
+  }
+  .how-close:hover { color: #d4727a; }
+  .how-card h2 {
+    font-family: 'Lilita One', cursive; font-size: 1.1rem;
+    color: #d4727a; margin-bottom: 14px;
+  }
+  .how-card p, .how-card li {
+    font-size: 0.85rem; color: #5a3e40; line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .how-card ul { padding-left: 18px; margin-bottom: 10px; }
+  .how-card li { margin-bottom: 4px; }
+  .how-card .how-emoji { font-size: 1.1rem; }
 </style>
 </head>
 <body>
@@ -233,7 +270,25 @@
 
 <h1>Wedding Strands</h1>
 <p class="game-ref">(based on the popular NYT Strands game)</p>
+<span class="how-link" onclick="document.getElementById('howOverlay').classList.add('active')">How to play?</span>
 <div class="theme-clue" id="themeClue"></div>
+
+<div class="how-overlay" id="howOverlay" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="how-card">
+    <button class="how-close" onclick="document.getElementById('howOverlay').classList.remove('active')">&times;</button>
+    <h2>How to Play</h2>
+    <p>Find all the hidden wedding-themed words in the grid!</p>
+    <ul>
+      <li><strong>Tap letters</strong> to trace a word — each letter must be adjacent (↕↔↗↘) to the previous one</li>
+      <li>Hit <strong>Submit ✓</strong> when you've traced a word</li>
+      <li>The <strong class="how-emoji">⭐ spangram</strong> is a special long word that spans the grid</li>
+      <li>Use the <strong>theme clue</strong> at the top for hints about what words to look for</li>
+      <li>Tap <strong>💡 Hint</strong> to highlight the cells of an unfound word (3 hints max)</li>
+      <li>Every cell in the grid belongs to exactly one word — find them all to win!</li>
+    </ul>
+    <p>Choose Easy, Medium, or Hard — each has different words about Ketaki & Ash!</p>
+  </div>
+</div>
 
 <div class="level-selector">
   <button class="level-btn active" onclick="loadLevel('easy')">💒 Easy</button>

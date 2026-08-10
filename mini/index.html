@@ -159,12 +159,68 @@
     h1 { font-size: 1.8rem; }
     .actions { margin-top: 8px; }
   }
+
+  /* How to play */
+  .how-link {
+    font-family: 'Special Elite', cursive; font-size: 0.8rem;
+    color: #9e7a7d; cursor: pointer; margin-bottom: 14px;
+    text-decoration: underline; text-underline-offset: 3px;
+    display: inline-block;
+  }
+  .how-link:hover { color: #d4727a; }
+  .how-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 500;
+    justify-content: center; align-items: center;
+  }
+  .how-overlay.active { display: flex; }
+  .how-card {
+    background: #fff; border-radius: 16px; padding: 28px 24px;
+    max-width: 360px; width: 90%; position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    max-height: 85vh; overflow-y: auto;
+  }
+  .how-close {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: none; font-size: 1.5rem;
+    cursor: pointer; color: #999; line-height: 1;
+  }
+  .how-close:hover { color: #d4727a; }
+  .how-card h2 {
+    font-family: 'Lilita One', cursive; font-size: 1.1rem;
+    color: #d4727a; margin-bottom: 14px;
+  }
+  .how-card p, .how-card li {
+    font-size: 0.85rem; color: #5a3e40; line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .how-card ul { padding-left: 18px; margin-bottom: 10px; }
+  .how-card li { margin-bottom: 4px; }
 </style>
 </head>
 <body>
 
 <h1>Mini Crossword</h1>
 <p class="subtitle">(how well do you know us?)</p>
+<span class="how-link" onclick="document.getElementById('howOverlay').classList.add('active')">How to play?</span>
+
+<div class="how-overlay" id="howOverlay" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="how-card">
+    <button class="how-close" onclick="document.getElementById('howOverlay').classList.remove('active')">&times;</button>
+    <h2>How to Play</h2>
+    <p>Fill in the crossword grid with the correct letters!</p>
+    <ul>
+      <li><strong>Tap a cell</strong> to select it — the highlighted row or column shows which word you're filling</li>
+      <li><strong>Type a letter</strong> and the cursor moves to the next cell automatically</li>
+      <li><strong>Tap the same cell again</strong> to switch between Across and Down</li>
+      <li>Use <strong>Backspace</strong> to delete and move back</li>
+      <li>Tap a <strong>clue</strong> to jump to that word</li>
+      <li>Hit <strong>Check ✓</strong> to see which letters are correct (they turn green)</li>
+      <li>Stuck? Hit <strong>Reveal</strong> to see all answers</li>
+    </ul>
+    <p>All clues are about Ketaki & Ash — how well do you know us? 💕</p>
+  </div>
+</div>
 
 <div class="grid-container" id="grid"></div>
 <!-- Hidden input to trigger mobile keyboard -->

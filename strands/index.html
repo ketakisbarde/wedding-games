@@ -488,10 +488,15 @@ function submitWord() {
   
   const word = selectedCells.map(([r, c]) => puzzle.grid[r][c]).join('');
   
-  // Check against theme words (match by word text, any valid adjacent path)
+  // Check against theme words (must match exact predefined path)
   let matched = false;
   for (const [targetWord, data] of Object.entries(puzzle.words)) {
     if (word === targetWord && !foundWords.has(targetWord)) {
+      // Verify the user's path matches the predefined path exactly
+      const pathMatch = selectedCells.length === data.path.length &&
+        selectedCells.every(([r, c], i) => r === data.path[i][0] && c === data.path[i][1]);
+      if (!pathMatch) continue;
+      
       foundWords.add(targetWord);
       matched = true;
       
@@ -525,7 +530,11 @@ function submitWord() {
   }
   
   if (!matched) {
-    if (word.length < 3) {
+    // Check if user spelled a theme word but used the wrong path
+    const isThemeWordWrongPath = Object.keys(puzzle.words).includes(word) && !foundWords.has(word);
+    if (isThemeWordWrongPath) {
+      showToast(`"${word}" — right word, wrong path! Try a different route 🔄`);
+    } else if (word.length < 3) {
       showToast('Too short! Need 3+ letters');
     } else if (Object.keys(puzzle.words).includes(word) && foundWords.has(word)) {
       showToast('Already found! ✓');

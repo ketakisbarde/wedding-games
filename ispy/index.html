@@ -74,8 +74,23 @@
   }
   .spy-text {
     font-size: 0.9rem; color: #4a3a3c; font-weight: 600;
-    line-height: 1.3; transition: all 0.2s;
+    line-height: 1.3; transition: all 0.2s; flex: 1;
   }
+
+  /* Camera button */
+  .spy-cam {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 2px solid #d4727a; background: #fff;
+    font-size: 1rem; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+  }
+  .spy-cam:hover { background: #fdf2f0; }
+  .spy-cam.has-photo {
+    background: #6abf69; border-color: #6abf69; color: #fff;
+    font-size: 0.85rem;
+  }
+  .spy-cam-input { display: none; }
 
   .score-bar {
     text-align: center; margin-bottom: 20px;
@@ -176,6 +191,7 @@
     .spy-check { width: 24px; height: 24px; font-size: 0.8rem; }
     .spy-emoji { font-size: 1.2rem; width: 26px; }
     .spy-text { font-size: 0.82rem; }
+    .spy-cam { width: 30px; height: 30px; font-size: 0.9rem; }
     .upload-section { padding: 18px 16px; }
     .upload-btn { padding: 12px 22px; font-size: 0.9rem; }
     .back-btn { padding: 6px 12px; font-size: 0.8rem; }
@@ -218,6 +234,7 @@
   <p class="upload-note">You can select multiple photos at once</p>
 </div>
 
+<canvas id="stampCanvas" style="display:none"></canvas>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -245,6 +262,99 @@ const PROMPTS = [
 // Load checked state from localStorage
 const storageKey = 'ispy-checked';
 let checked = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+const photoDone = new Set(JSON.parse(localStorage.getItem('ispy-photos') || '[]'));
+
+// Hidden file input for camera/gallery
+const fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.accept = 'image/*';
+fileInput.className = 'spy-cam-input';
+fileInput.multiple = true;
+document.body.appendChild(fileInput);
+let activePromptIdx = null;
+
+function openCamera(idx) {
+  activePromptIdx = idx;
+  fileInput.value = '';
+  fileInput.click();
+}
+
+fileInput.addEventListener('change', () => {
+  if (!fileInput.files.length || activePromptIdx === null) return;
+  const prompt = PROMPTS[activePromptIdx];
+  const slug = prompt.text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/,'');
+  const files = [...fileInput.files];
+  let processed = 0;
+
+  files.forEach((file, fi) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        stampAndSave(img, prompt, slug, fi, files.length);
+        processed++;
+        if (processed === files.length) {
+          // Auto-check the prompt
+          if (!checked.has(activePromptIdx)) {
+            checked.add(activePromptIdx);
+            localStorage.setItem(storageKey, JSON.stringify([...checked]));
+            burstConfetti();
+          }
+          photoDone.add(activePromptIdx);
+          localStorage.setItem('ispy-photos', JSON.stringify([...photoDone]));
+          render();
+          showToast('📸 Photo stamped & saved!');
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+function stampAndSave(img, prompt, slug, fileIdx, totalFiles) {
+  const canvas = document.getElementById('stampCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = img.width;
+  canvas.height = img.height;
+
+  // Draw original image
+  ctx.drawImage(img, 0, 0);
+
+  // Banner dimensions
+  const bannerH = Math.max(img.height * 0.08, 80);
+  const bannerY = img.height - bannerH;
+
+  // Semi-transparent banner
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+  ctx.fillRect(0, bannerY, img.width, bannerH);
+
+  // Prompt text
+  const fontSize = Math.max(bannerH * 0.38, 24);
+  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const label = `${prompt.emoji}  ${prompt.text}`;
+  ctx.fillText(label, img.width / 2, bannerY + bannerH * 0.38, img.width * 0.9);
+
+  // Subtitle
+  const subSize = Math.max(fontSize * 0.5, 14);
+  ctx.font = `${subSize}px sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillText('Ketaki & Ash\'s Wedding 💒', img.width / 2, bannerY + bannerH * 0.75);
+
+  // Download
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const suffix = totalFiles > 1 ? `-${fileIdx + 1}` : '';
+    a.download = `ispy-${slug}${suffix}.jpg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, 'image/jpeg', 0.92);
+}
 
 function render() {
   const container = document.getElementById('checklist');
@@ -257,6 +367,16 @@ function render() {
       <div class="spy-emoji">${p.emoji}</div>
       <div class="spy-text">${p.text}</div>
     `;
+    // Camera button
+    const camBtn = document.createElement('button');
+    camBtn.className = 'spy-cam' + (photoDone.has(i) ? ' has-photo' : '');
+    camBtn.innerHTML = photoDone.has(i) ? '✓' : '📷';
+    camBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCamera(i);
+    });
+    item.appendChild(camBtn);
+
     item.addEventListener('click', () => toggle(i));
     container.appendChild(item);
   });

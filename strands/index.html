@@ -61,13 +61,14 @@
   .hint-btn:hover { background: #fff; }
   .hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* DEV: Word list (visible during dev, will remove later) */
+  /* DEV: Word list (hidden by default, add ?dev=1 to URL to show) */
   .word-list {
-    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    display: none; flex-wrap: wrap; gap: 8px; justify-content: center;
     margin-bottom: 12px; max-width: 380px;
     border: 1px dashed rgba(212,114,122,0.3); padding: 8px; border-radius: 8px;
     background: rgba(255,255,200,0.3);
   }
+  .word-list.visible { display: flex; }
   .word-list::before {
     content: '🛠 DEV - Words visible'; display: block; width: 100%;
     font-size: 0.65rem; color: #999; text-align: center; margin-bottom: 4px;
@@ -386,8 +387,11 @@ function updateProgress() {
 }
 
 function renderWordList() {
-  // DEV MODE: shows all words (will be hidden in production)
+  // DEV MODE: only visible with ?dev=1 in URL
   const container = document.getElementById('wordList');
+  if (new URLSearchParams(window.location.search).get('dev') === '1') {
+    container.classList.add('visible');
+  }
   container.innerHTML = '';
   for (const [word, data] of Object.entries(puzzle.words)) {
     const chip = document.createElement('span');

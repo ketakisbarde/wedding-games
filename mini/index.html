@@ -51,8 +51,9 @@
   }
   .grid-cell .number {
     position: absolute; top: 2px; left: 3px;
-    font-size: 0.55rem; font-weight: 600; color: #9e7a7d;
+    font-size: 0.7rem; font-weight: 800; color: #d4727a;
     line-height: 1;
+    z-index: 1;
   }
   .grid-cell.active {
     border-color: #d4727a;
@@ -134,7 +135,7 @@
   @media (max-width: 420px) {
     h1 { font-size: 2.2rem; }
     .grid-cell { font-size: 1.1rem; }
-    .grid-cell .number { font-size: 0.5rem; }
+    .grid-cell .number { font-size: 0.6rem; }
     .clues-container { grid-template-columns: 1fr; gap: 14px; }
     .clue { font-size: 0.8rem; }
   }
@@ -178,25 +179,18 @@
 // Puzzle data
 const GRID_SIZE = 7;
 const PUZZLE = {
-  // Grid: null = black cell, '' = empty white cell
-  grid: [
-    ['S','E','A','T','T','L','E'],
-    [null,null,null,'','',null,null],
-    [null,null,null,'','','',null],
-    ['M','A','R','A','T','H','I'],
-    [null,null,null,'',null,'',null],
-    [null,null,null,null,null,'',null],
-    ['D','E','S','S','E','R','T']
-  ],
   clues: {
     across: [
       { num: 1, row: 0, col: 0, answer: 'SEATTLE', clue: 'Their first date city' },
-      { num: 4, row: 3, col: 0, answer: 'MARATHI', clue: "Ketu's roots" },
-      { num: 5, row: 6, col: 0, answer: 'DESSERT', clue: 'Ash never skips this course' }
+      { num: 5, row: 3, col: 0, answer: 'CHATEAU', clue: 'Wedding venue: ___ Mt Eden' },
+      { num: 7, row: 6, col: 0, answer: 'MARATHI', clue: "Ketu's mother tongue" }
     ],
     down: [
-      { num: 2, row: 1, col: 3, answer: 'CHAI', clue: 'Daily ritual beverage' },
-      { num: 3, row: 2, col: 5, answer: 'BHEL', clue: "Ketu's fave street snack" }
+      { num: 2, row: 0, col: 2, answer: 'AQUA', clue: 'Color of the sea at Carmel' },
+      { num: 3, row: 0, col: 4, answer: 'TRUE', clue: '___ love' },
+      { num: 4, row: 0, col: 6, answer: 'ECRU', clue: 'Wedding dress shade' },
+      { num: 5, row: 3, col: 0, answer: 'CALM', clue: 'Keep ___ and marry on' },
+      { num: 6, row: 3, col: 5, answer: 'ARCH', clue: "They'll stand under this" }
     ]
   }
 };

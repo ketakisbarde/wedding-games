@@ -344,16 +344,36 @@ function stampAndSave(img, prompt, slug, fileIdx, totalFiles) {
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   ctx.fillText('Ketaki & Ash\'s Wedding 💒', img.width / 2, bannerY + bannerH * 0.75);
 
-  // Download
-  canvas.toBlob((blob) => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
+  // Save — use Web Share API on mobile, download fallback on desktop
+  canvas.toBlob(async (blob) => {
     const suffix = totalFiles > 1 ? `-${fileIdx + 1}` : '';
-    a.download = `ispy-${slug}${suffix}.jpg`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const filename = `ispy-${slug}${suffix}.jpg`;
+    const file = new File([blob], filename, { type: 'image/jpeg' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: `${prompt.emoji} ${prompt.text}`,
+          text: 'I Spy — Ketaki & Ash\'s Wedding'
+        });
+      } catch (e) {
+        // User cancelled share — that's ok
+        if (e.name !== 'AbortError') fallbackDownload(blob, filename);
+      }
+    } else {
+      fallbackDownload(blob, filename);
+    }
   }, 'image/jpeg', 0.92);
+}
+
+function fallbackDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function render() {

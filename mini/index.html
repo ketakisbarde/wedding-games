@@ -147,6 +147,8 @@
 <p class="subtitle">(how well do you know us?)</p>
 
 <div class="grid-container" id="grid"></div>
+<!-- Hidden input to trigger mobile keyboard -->
+<input type="text" id="mobileInput" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" style="position:fixed;top:-1px;left:0;width:1px;height:1px;opacity:0;border:none;outline:none;z-index:-1;">
 
 <div class="clues-container">
   <div class="clue-section">
@@ -301,6 +303,9 @@ function selectCell(row, col) {
   }
   
   updateHighlights();
+  // Focus hidden input to open mobile keyboard
+  const inp = document.getElementById('mobileInput');
+  if (inp) { inp.value = ''; inp.focus(); }
 }
 
 function findClueForCell(row, col, direction) {
@@ -350,7 +355,7 @@ function getCell(row, col) {
   return document.querySelector(`.grid-cell[data-row="${row}"][data-col="${col}"]`);
 }
 
-// Keyboard input
+// Keyboard input (works on desktop + mobile backspace)
 document.addEventListener('keydown', (e) => {
   if (!activeCell) return;
   
@@ -374,6 +379,29 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     userGrid[activeCell.row][activeCell.col] = key;
     moveNext();
+    renderGrid();
+  }
+});
+
+// Mobile keyboard input via hidden input
+const mobileInput = document.getElementById('mobileInput');
+mobileInput.addEventListener('input', (e) => {
+  if (!activeCell) return;
+  const val = (e.data || '').toUpperCase();
+  if (/^[A-Z]$/.test(val)) {
+    userGrid[activeCell.row][activeCell.col] = val;
+    moveNext();
+    renderGrid();
+  }
+  mobileInput.value = '';
+});
+// Handle backspace on mobile (input event with inputType)
+mobileInput.addEventListener('keydown', (e) => {
+  if (!activeCell) return;
+  if (e.key === 'Backspace') {
+    e.preventDefault();
+    userGrid[activeCell.row][activeCell.col] = '';
+    movePrev();
     renderGrid();
   }
 });

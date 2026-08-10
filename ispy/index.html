@@ -259,17 +259,21 @@ const PROMPTS = [
   { emoji: '🌅', text: 'The prettiest moment of the evening' },
 ];
 
+// ===== CONFIGURATION =====
+// After deploying Google Apps Script, paste your web app URL here:
+const APPS_SCRIPT_URL = ''; // e.g. 'https://script.google.com/macros/s/AKfyc.../exec'
+
 // Load checked state from localStorage
 const storageKey = 'ispy-checked';
 let checked = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
 const photoDone = new Set(JSON.parse(localStorage.getItem('ispy-photos') || '[]'));
 
-// Hidden file input for camera/gallery
+// Hidden file input — camera preferred on mobile
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.accept = 'image/*';
+fileInput.setAttribute('capture', 'environment'); // opens camera directly on mobile
 fileInput.className = 'spy-cam-input';
-fileInput.multiple = true;
 document.body.appendChild(fileInput);
 let activePromptIdx = null;
 
@@ -283,36 +287,22 @@ fileInput.addEventListener('change', () => {
   if (!fileInput.files.length || activePromptIdx === null) return;
   const prompt = PROMPTS[activePromptIdx];
   const slug = prompt.text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/,'');
-  const files = [...fileInput.files];
-  let processed = 0;
+  const file = fileInput.files[0]; // single photo (camera)
 
-  files.forEach((file, fi) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        stampAndSave(img, prompt, slug, fi, files.length);
-        processed++;
-        if (processed === files.length) {
-          // Auto-check the prompt
-          if (!checked.has(activePromptIdx)) {
-            checked.add(activePromptIdx);
-            localStorage.setItem(storageKey, JSON.stringify([...checked]));
-            burstConfetti();
-          }
-          photoDone.add(activePromptIdx);
-          localStorage.setItem('ispy-photos', JSON.stringify([...photoDone]));
-          render();
-          showToast('📸 Photo stamped & saved!');
-        }
-      };
-      img.src = e.target.result;
+  showToast('📸 Stamping & uploading...');
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      stampAndUpload(img, prompt, slug);
     };
-    reader.readAsDataURL(file);
-  });
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 });
 
-function stampAndSave(img, prompt, slug, fileIdx, totalFiles) {
+function stampAndUpload(img, prompt, slug) {
   const canvas = document.getElementById('stampCanvas');
   const ctx = canvas.getContext('2d');
   canvas.width = img.width;
@@ -344,30 +334,71 @@ function stampAndSave(img, prompt, slug, fileIdx, totalFiles) {
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   ctx.fillText('Ketaki & Ash\'s Wedding 💒', img.width / 2, bannerY + bannerH * 0.75);
 
-  // Save — use Web Share API on mobile, download fallback on desktop
-  canvas.toBlob(async (blob) => {
-    const suffix = totalFiles > 1 ? `-${fileIdx + 1}` : '';
-    const filename = `ispy-${slug}${suffix}.jpg`;
-    const file = new File([blob], filename, { type: 'image/jpeg' });
+  const filename = `ispy-${slug}.jpg`;
 
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+  // Upload to Google Drive via Apps Script
+  canvas.toBlob(async (blob) => {
+    if (APPS_SCRIPT_URL) {
       try {
-        await navigator.share({
-          files: [file],
-          title: `${prompt.emoji} ${prompt.text}`,
-          text: 'I Spy — Ketaki & Ash\'s Wedding'
+        const base64 = await blobToBase64(blob);
+        const resp = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ image: base64, filename }),
         });
-      } catch (e) {
-        // User cancelled share — that's ok
-        if (e.name !== 'AbortError') fallbackDownload(blob, filename);
+        const result = await resp.json();
+        if (result.success) {
+          showToast('✅ Uploaded to Drive!');
+        } else {
+          showToast('⚠️ Upload failed — saving locally');
+          fallbackSave(blob, filename, prompt);
+        }
+      } catch (err) {
+        showToast('⚠️ Upload failed — saving locally');
+        fallbackSave(blob, filename, prompt);
       }
     } else {
-      fallbackDownload(blob, filename);
+      // No Apps Script URL configured — use share/download
+      fallbackSave(blob, filename, prompt);
     }
-  }, 'image/jpeg', 0.92);
+
+    // Auto-check the prompt
+    if (!checked.has(activePromptIdx)) {
+      checked.add(activePromptIdx);
+      localStorage.setItem(storageKey, JSON.stringify([...checked]));
+      burstConfetti();
+    }
+    photoDone.add(activePromptIdx);
+    localStorage.setItem('ispy-photos', JSON.stringify([...photoDone]));
+    render();
+  }, 'image/jpeg', 0.85);
 }
 
-function fallbackDownload(blob, filename) {
+function blobToBase64(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function fallbackSave(blob, filename, prompt) {
+  const file = new File([blob], filename, { type: 'image/jpeg' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: `${prompt.emoji} ${prompt.text}`,
+        text: 'I Spy — Ketaki & Ash\'s Wedding'
+      });
+    } catch (e) {
+      if (e.name !== 'AbortError') downloadFile(blob, filename);
+    }
+  } else {
+    downloadFile(blob, filename);
+  }
+}
+
+function downloadFile(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

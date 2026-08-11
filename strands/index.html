@@ -247,10 +247,13 @@
   }
   .how-close {
     position: absolute; top: 12px; right: 14px;
-    background: none; border: none; font-size: 1.5rem;
-    cursor: pointer; color: #999; line-height: 1;
+    background: #f5e6e7; border: 2px solid #d4727a; font-size: 1.3rem;
+    cursor: pointer; color: #d4727a; line-height: 1;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
   }
-  .how-close:hover { color: #d4727a; }
+  .how-close:hover { background: #d4727a; color: #fff; }
   .how-card h2 {
     font-family: 'Lilita One', cursive; font-size: 1.1rem;
     color: #d4727a; margin-bottom: 14px;
@@ -391,7 +394,7 @@ const PUZZLES = {
   },
 
   hard: {
-    clue: '"Only true friends of Ketaki & Ash will get this 💎"',
+    clue: '"Think you really know Ketaki & Ash? Prove it 💎"',
     grid: [
       ['C','O','L','D','P','L'],
       ['F','C','H','A','I','A'],
@@ -716,6 +719,12 @@ document.addEventListener('keydown', (e) => {
 });
 
 loadLevel('easy');
+
+// Auto-show How to Play on first visit
+if (!localStorage.getItem('strands-how-seen')) {
+  document.getElementById('howOverlay').classList.add('active');
+  localStorage.setItem('strands-how-seen', '1');
+}
 </script>
 </body>
 </html>

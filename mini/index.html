@@ -149,15 +149,36 @@
     .actions { margin-top: 12px; gap: 8px; }
     .btn { padding: 8px 16px; font-size: 0.8rem; }
   }
-  @media (max-height: 700px) and (max-width: 420px) {
+  @media (max-width: 380px) {
     .grid-container {
-      width: min(260px, 75vw);
-      height: min(260px, 75vw);
-      margin-bottom: 10px;
+      width: min(270px, 82vw);
+      height: min(270px, 82vw);
     }
     .grid-cell { font-size: 0.9rem; }
     h1 { font-size: 1.8rem; }
+    .clue { font-size: 0.7rem; }
+  }
+  @media (max-height: 700px) and (max-width: 420px) {
+    .grid-container {
+      width: min(240px, 70vw);
+      height: min(240px, 70vw);
+      margin-bottom: 10px;
+    }
+    .grid-cell { font-size: 0.85rem; }
+    h1 { font-size: 1.7rem; }
+    .subtitle { margin-bottom: 6px; }
     .actions { margin-top: 8px; }
+    .clue { font-size: 0.68rem; margin-bottom: 2px; }
+  }
+  @media (max-height: 600px) and (max-width: 420px) {
+    .grid-container {
+      width: min(210px, 65vw);
+      height: min(210px, 65vw);
+      margin-bottom: 8px;
+    }
+    .grid-cell { font-size: 0.8rem; }
+    h1 { font-size: 1.5rem; }
+    .clue-section h3 { font-size: 0.75rem; }
   }
 
   /* How to play */
@@ -182,10 +203,13 @@
   }
   .how-close {
     position: absolute; top: 12px; right: 14px;
-    background: none; border: none; font-size: 1.5rem;
-    cursor: pointer; color: #999; line-height: 1;
+    background: #f5e6e7; border: 2px solid #d4727a; font-size: 1.3rem;
+    cursor: pointer; color: #d4727a; line-height: 1;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
   }
-  .how-close:hover { color: #d4727a; }
+  .how-close:hover { background: #d4727a; color: #fff; }
   .how-card h2 {
     font-family: 'Lilita One', cursive; font-size: 1.1rem;
     color: #d4727a; margin-bottom: 14px;
@@ -265,12 +289,12 @@ const PUZZLE = {
       { num: 8, row: 2, col: 4, answer: 'UMM', clue: 'Hesitation filler word' }
     ],
     down: [
-      { num: 2, row: 0, col: 2, answer: 'AQUA', clue: 'Color of the sea at Carmel' },
+      { num: 2, row: 0, col: 2, answer: 'AQUA', clue: 'Carmel beach color OR shade of blue' },
       { num: 3, row: 0, col: 4, answer: 'TRUE', clue: '___ love' },
       { num: 4, row: 3, col: 3, answer: 'TIKA', clue: 'Bridal head jewel (maang ___)' },
       { num: 5, row: 3, col: 0, answer: 'CALM', clue: 'Keep ___ and marry on' },
-      { num: 6, row: 2, col: 5, answer: 'MARCH', clue: '"Here Comes the Bride" aka wedding ___' },
-      { num: 9, row: 2, col: 6, answer: 'MU', clue: 'Greek letter (12th)' }
+      { num: 6, row: 2, col: 5, answer: 'MARCH', clue: 'Here comes the bride wedding ___ OR name of the month' },
+      { num: 9, row: 2, col: 6, answer: 'MU', clue: 'Greek letter for "M"' }
     ]
   }
 };
@@ -431,9 +455,10 @@ function getCell(row, col) {
   return document.querySelector(`.grid-cell[data-row="${row}"][data-col="${col}"]`);
 }
 
-// Keyboard input (works on desktop + mobile backspace)
+// Keyboard input (desktop only — skip when mobileInput is focused)
 document.addEventListener('keydown', (e) => {
   if (!activeCell) return;
+  if (document.activeElement === mobileInput) return; // let mobileInput handler deal with it
   
   const key = e.key.toUpperCase();
   
@@ -580,6 +605,12 @@ function showToast(msg) {
 // Init
 renderGrid();
 renderClues();
+
+// Auto-show How to Play on first visit
+if (!localStorage.getItem('mini-how-seen')) {
+  document.getElementById('howOverlay').classList.add('active');
+  localStorage.setItem('mini-how-seen', '1');
+}
 </script>
 </body>
 </html>
